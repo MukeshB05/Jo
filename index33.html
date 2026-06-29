@@ -1572,9 +1572,43 @@
                         <span class="icon">▶</span> Play
                     </a>
                 </div>
-            
-                <div class="channel-card" data-category="Entertainment">
-                    <img class="channel-logo" 
-                         src="https://jiotvimages.cdn.jio.com/dare_images/images/SonyPAL.png" 
-                         alt="Sony Pal" 
-                    …
+
+                </div>
+
+        <div class="footer">
+            <span>Powered by Cloudflare Workers</span>
+        </div>
+    </div>
+
+    <script>
+        // Category filter functionality
+        (function() {
+            const filterBar = document.getElementById('filterBar');
+            const grid = document.getElementById('channelGrid');
+            const cards = grid.querySelectorAll('.channel-card');
+
+            // Category filter buttons
+            filterBar.addEventListener('click', function(e) {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+
+                // Update active button
+                filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const category = btn.dataset.category;
+                
+                // Filter cards
+                cards.forEach(card => {
+                    const cardCategory = card.dataset.category || 'General';
+                    if (category === 'All' || cardCategory === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
