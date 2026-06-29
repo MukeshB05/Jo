@@ -1,0 +1,1580 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>📺 JioTV Channels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: #0b0e14;
+            color: #e8edf5;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1rem 0 1.5rem 0;
+        }
+
+        .header h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #8d99b0;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            padding: 0.5rem;
+        }
+
+        .filter-btn {
+            background: #1e2532;
+            border: 2px solid transparent;
+            color: #aab4c9;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .filter-btn:hover {
+            background: #2a3344;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.active {
+            background: #f7971e;
+            color: #0b0e14;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(247, 151, 30, 0.3);
+        }
+
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .channel-card {
+            background: #151d2b;
+            border-radius: 16px;
+            padding: 1rem 0.8rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid #2a3346;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f7971e, #ffd200);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .channel-card:hover::before {
+            opacity: 1;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            border-color: #f7971e55;
+        }
+
+        .channel-card:active {
+            transform: scale(0.97);
+        }
+
+        .channel-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            background: #0f1621;
+            border-radius: 12px;
+            padding: 0.4rem;
+            margin-bottom: 0.6rem;
+            border: 1px solid #2a3346;
+            transition: transform 0.2s ease;
+        }
+
+        .channel-card:hover .channel-logo {
+            transform: scale(1.05);
+        }
+
+        .channel-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            margin-bottom: 0.3rem;
+            color: #f0f4fe;
+            max-width: 100%;
+            word-break: break-word;
+            min-height: 2.4rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .channel-category {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #8d99b0;
+            background: #1e2532;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+        }
+
+        .play-btn {
+            background: linear-gradient(145deg, #f7971e, #e08e00);
+            border: none;
+            color: #0b0e14;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(247, 151, 30, 0.25);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            width: auto;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            background: #ffb82e;
+            box-shadow: 0 6px 20px rgba(247, 151, 30, 0.4);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn .icon {
+            font-size: 0.9rem;
+        }
+
+        .status-msg {
+            text-align: center;
+            padding: 4rem 1rem;
+            font-size: 1.1rem;
+            color: #aab4c9;
+            grid-column: 1 / -1;
+        }
+
+        .status-msg.error {
+            color: #f87171;
+        }
+
+        .status-msg .retry-btn {
+            margin-top: 1.5rem;
+            padding: 0.6rem 1.8rem;
+            background: #f7971e;
+            border: none;
+            border-radius: 30px;
+            color: #0b0e14;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-msg .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(247, 151, 30, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0 0.5rem;
+            color: #4a5568;
+            font-size: 0.8rem;
+            border-top: 1px solid #1e2532;
+            margin-top: 2rem;
+        }
+
+        /* Loading shimmer effect */
+        .loading-shimmer {
+            animation: shimmer 1.5s infinite;
+            background: linear-gradient(90deg, #151d2b 25%, #1e2532 50%, #151d2b 75%);
+            background-size: 200% 100%;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body { padding: 0.6rem; }
+            .header h1 { font-size: 1.5rem; }
+            .channel-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 0.8rem;
+            }
+            .channel-logo {
+                width: 70px;
+                height: 70px;
+            }
+            .filter-btn {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.9rem;
+            }
+            .play-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 1rem;
+                min-width: 70px;
+            }
+            .channel-name {
+                font-size: 0.8rem;
+                min-height: 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .channel-grid {
+                grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+                gap: 1.5rem;
+            }
+            .channel-logo {
+                width: 110px;
+                height: 110px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .channel-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 0.6rem;
+            }
+            .channel-logo {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📺 JioTV Channels</h1>
+            <p>1150 channels available</p>
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-category="All">All</button><button class="filter-btn " data-category="Assamese">Assamese</button><button class="filter-btn " data-category="Bengali">Bengali</button><button class="filter-btn " data-category="Bhojpuri">Bhojpuri</button><button class="filter-btn " data-category="Business News">Business News</button><button class="filter-btn " data-category="Devotional">Devotional</button><button class="filter-btn " data-category="Educational">Educational</button><button class="filter-btn " data-category="English">English</button><button class="filter-btn " data-category="Entertainment">Entertainment</button><button class="filter-btn " data-category="French">French</button><button class="filter-btn " data-category="Gujarati">Gujarati</button><button class="filter-btn " data-category="Infotainment">Infotainment</button><button class="filter-btn " data-category="Kannada">Kannada</button><button class="filter-btn " data-category="Kids">Kids</button><button class="filter-btn " data-category="Lifestyle">Lifestyle</button><button class="filter-btn " data-category="Malayalam">Malayalam</button><button class="filter-btn " data-category="Malyalam">Malyalam</button><button class="filter-btn " data-category="Marathi">Marathi</button><button class="filter-btn " data-category="Movies">Movies</button><button class="filter-btn " data-category="Music">Music</button><button class="filter-btn " data-category="Nepali">Nepali</button><button class="filter-btn " data-category="News">News</button><button class="filter-btn " data-category="Odia">Odia</button><button class="filter-btn " data-category="Punjabi">Punjabi</button><button class="filter-btn " data-category="Sports">Sports</button><button class="filter-btn " data-category="Tamil">Tamil</button><button class="filter-btn " data-category="Telugu">Telugu</button><button class="filter-btn " data-category="Unknown">Unknown</button><button class="filter-btn " data-category="Urdu">Urdu</button>
+        </div>
+
+        <div class="channel-grid" id="channelGrid">
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/CNBCTV18Prime.png" 
+                         alt="CNBC TV18 Prime" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">CNBC TV18 Prime</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=143" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ColorsHD.png" 
+                         alt="Colors HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Colors HD</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=144" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/History_HD.png" 
+                         alt="History TV18 HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">History TV18 HD</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=146" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Movies_Now_HD.png" 
+                         alt="Movies Now HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Movies Now HD</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=151" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeTalkies.png" 
+                         alt="Zee Talkies" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee Talkies</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=153" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Movies">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Star_Gold_HD.png" 
+                         alt="Star Gold HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Star Gold HD</div>
+                    <span class="channel-category">Movies</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=156" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Travel_XP_HD.png" 
+                         alt="Travelxp HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Travelxp HD</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=164" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Movies">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeCinemaHD.png" 
+                         alt="Zee Cinema HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee Cinema HD</div>
+                    <span class="channel-category">Movies</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=165" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Telugu">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/CNTelugu.png" 
+                         alt="Cartoon Network Telugu" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Cartoon Network Telugu</div>
+                    <span class="channel-category">Telugu</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=166" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeTVHD.png" 
+                         alt="Zee TV HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee TV HD</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=167" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Aaj_Tak.png" 
+                         alt="Aaj Tak" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Aaj Tak</div>
+                    <span class="channel-category">News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=173" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Devotional">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Aastha.png" 
+                         alt="Aastha" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Aastha</div>
+                    <span class="channel-category">Devotional</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=175" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ABP_News_India.png" 
+                         alt="ABP News India" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">ABP News India</div>
+                    <span class="channel-category">News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=177" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Malayalam">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Asianet_News.png" 
+                         alt="Asianet News" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Asianet News</div>
+                    <span class="channel-category">Malayalam</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=180" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Movies">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/b4u_movies.png" 
+                         alt="B4U Movies" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">B4U Movies</div>
+                    <span class="channel-category">Movies</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=182" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Music">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/B4U_Music.png" 
+                         alt="B4U Music" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">B4U Music</div>
+                    <span class="channel-category">Music</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=183" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Movies">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/AndPicturesHD.png" 
+                         alt="And Pictures HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">And Pictures HD</div>
+                    <span class="channel-category">Movies</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=185" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Business News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/CNBCAwaaz.png" 
+                         alt="CNBC Awaaz" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">CNBC Awaaz</div>
+                    <span class="channel-category">Business News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=190" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/CNN.png" 
+                         alt="CNN" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">CNN</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=193" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Gujarati">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ColorsGujarati.png" 
+                         alt="Colors Gujarati" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Colors Gujarati</div>
+                    <span class="channel-category">Gujarati</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=196" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/DD_National.png" 
+                         alt="DD National" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">DD National</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=202" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/DD_News.png" 
+                         alt="DD News" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">DD News</div>
+                    <span class="channel-category">News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=203" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Sports">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/DD_Sports.png" 
+                         alt="DD Sports" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">DD Sports</div>
+                    <span class="channel-category">Sports</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=204" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ET_Now.png" 
+                         alt="ET Now" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">ET Now</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=212" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/IBN_7.png" 
+                         alt="News 18 India" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">News 18 India</div>
+                    <span class="channel-category">News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=231" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/News18Lokmat.png" 
+                         alt="News18 Marathi" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">News18 Marathi</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=232" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/India_TV.png" 
+                         alt="India TV" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">India TV</div>
+                    <span class="channel-category">News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=235" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Discovery_Channel_Eng.png" 
+                         alt="Discovery English" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Discovery English</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=242" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Music">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/MTV.png" 
+                         alt="MTV" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">MTV</div>
+                    <span class="channel-category">Music</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=248" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Music">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Music_India.png" 
+                         alt="Music India" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Music India</div>
+                    <span class="channel-category">Music</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=250" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/NDTV_24x7.png" 
+                         alt="NDTV 24x7" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">NDTV 24x7</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=255" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="News">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/NDTV_India.png" 
+                         alt="NDTV India" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">NDTV India</div>
+                    <span class="channel-category">News</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=258" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/NDTV_Profit.png" 
+                         alt="NDTV Profit" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">NDTV Profit</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=259" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ColorsRishtey.png" 
+                         alt="Colors Rishtey" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Colors Rishtey</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=279" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/AnimalPlanetHDEng.png" 
+                         alt="Animal Planet HD English" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Animal Planet HD English</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=286" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Devotional">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Sanskar.png" 
+                         alt="Sanskar" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Sanskar</div>
+                    <span class="channel-category">Devotional</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=288" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/sonic_Tamil.png" 
+                         alt="sonic Tamil" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">sonic Tamil</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=290" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Sony_HD.png" 
+                         alt="SET HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">SET HD</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=291" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Bengali">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Star_Jalsha_HD.png" 
+                         alt="Star Jalsha HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Star Jalsha HD</div>
+                    <span class="channel-category">Bengali</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=317" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Star_Pravah_HD.png" 
+                         alt="Star Pravah HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Star Pravah HD</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=336" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Star_Vijay_HD.png" 
+                         alt="Star Vijay HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Star Vijay HD</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=368" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Kannada">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Suvarna_HD.png" 
+                         alt="Suvarna HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Suvarna HD</div>
+                    <span class="channel-category">Kannada</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=370" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Times_NOW.png" 
+                         alt="Times NOW" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Times NOW</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=383" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_1.png" 
+                         alt="PM e Vidya 01" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 01</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=400" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Swayam_Prabha_19.png" 
+                         alt="Swayam Prabha 19" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Swayam Prabha 19</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=401" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_2.png" 
+                         alt="PM e Vidya 02" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 02</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=402" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Swayam_Prabha_20.png" 
+                         alt="Swayam Prabha 20" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Swayam Prabha 20</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=403" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_7.png" 
+                         alt="PM e Vidya 07" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 07</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=404" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_3.png" 
+                         alt="PM e Vidya 03" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 03</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=405" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_4.png" 
+                         alt="PM e Vidya 04" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 04</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=406" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_5.png" 
+                         alt="PM e Vidya 05" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 05</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=407" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_6.png" 
+                         alt="PM e Vidya 06" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 06</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=408" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/_evidya_8.png" 
+                         alt="PM e Vidya 08" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 08</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=409" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_9.png" 
+                         alt="PM e Vidya 09" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 09</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=410" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/evidya_10.png" 
+                         alt="PM e Vidya 10" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">PM e Vidya 10</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=411" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Wion.png" 
+                         alt="Wion" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Wion</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=412" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Telugu">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeCinemalu.png" 
+                         alt="Zee Cinemalu" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee Cinemalu</div>
+                    <span class="channel-category">Telugu</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=413" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeYuva.png" 
+                         alt="Zee Yuva" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee Yuva</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=414" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Movies">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeAnmolCinema.png" 
+                         alt="Zee Anmol Cinema" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee Anmol Cinema</div>
+                    <span class="channel-category">Movies</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=415" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/J_Movies.png" 
+                         alt="J Movies" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">J Movies</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=417" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Jaya_Plus.png" 
+                         alt="Jaya Plus" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Jaya Plus</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=418" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Jaya_TV_HD.png" 
+                         alt="Jaya TV HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Jaya TV HD</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=419" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Jaya_Max.png" 
+                         alt="Jaya Max" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Jaya Max</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=420" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Tamil">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ColorsTamilHD.png" 
+                         alt="Colors Tamil HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Colors Tamil HD</div>
+                    <span class="channel-category">Tamil</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=429" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Music">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/9XJalwa.png" 
+                         alt="9X Jalwa" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">9X Jalwa</div>
+                    <span class="channel-category">Music</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=440" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/9xjhakaas.png" 
+                         alt="9x Jhakaas" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">9x Jhakaas</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=441" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Zee_24_Taas.png" 
+                         alt="Zee 24 Taas" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee 24 Taas</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=442" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Malayalam">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Asianet_HD.png" 
+                         alt="Asianet HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Asianet HD</div>
+                    <span class="channel-category">Malayalam</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=443" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Marathi">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeMarathi.png" 
+                         alt="Zee Marathi" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee Marathi</div>
+                    <span class="channel-category">Marathi</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=445" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Bengali">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Jalsa_Movies_HD.png" 
+                         alt="Jalsha Movies HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Jalsha Movies HD</div>
+                    <span class="channel-category">Bengali</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=457" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Malayalam">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Asianet_Movies_HD.png" 
+                         alt="Asianet Movies HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Asianet Movies HD</div>
+                    <span class="channel-category">Malayalam</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=459" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="English">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/DiscoveryHDEng.png" 
+                         alt="Discovery HD English" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Discovery HD English</div>
+                    <span class="channel-category">English</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=463" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Bengali">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/24_Ghanta_TV.png" 
+                         alt="Zee 24 Ghanta" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Zee 24 Ghanta</div>
+                    <span class="channel-category">Bengali</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=464" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Malayalam">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Jaihind_tv.png" 
+                         alt="Jaihind tv" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Jaihind tv</div>
+                    <span class="channel-category">Malayalam</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=465" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Devotional">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/Arihant_TV.png" 
+                         alt="Dharma Sandesh" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Dharma Sandesh</div>
+                    <span class="channel-category">Devotional</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=466" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/SonySAB.png" 
+                         alt="Sony SAB HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Sony SAB HD</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=471" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/AndTVHD.png" 
+                         alt="And TV HD" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">And TV HD</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=472" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/ZeeAnmol.png" 
+                         alt="Anmol TV" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2290%22 viewBox=%220 0 90 90%22%3E%3Crect width=%2290%22 height=%2290%22 fill=%22%231a2230%22/%3E%3Ctext x=%2245%22 y=%2250%22 font-size=%2212%22 text-anchor=%22middle%22 fill=%22%236b7a93%22 font-family=%22sans-serif%22%3ENo logo%3C/text%3E%3C/svg%3E'">
+                    <div class="channel-name">Anmol TV</div>
+                    <span class="channel-category">Entertainment</span>
+                    <a href="https://jtvplayer.uhd2026.workers.dev/?id=473" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="play-btn">
+                        <span class="icon">▶</span> Play
+                    </a>
+                </div>
+            
+                <div class="channel-card" data-category="Entertainment">
+                    <img class="channel-logo" 
+                         src="https://jiotvimages.cdn.jio.com/dare_images/images/SonyPAL.png" 
+                         alt="Sony Pal" 
+                    …
